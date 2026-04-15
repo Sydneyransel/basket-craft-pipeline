@@ -120,7 +120,6 @@ sqlalchemy
 pymysql
 psycopg2-binary
 python-dotenv
-pandas
 ```
 
 ---
