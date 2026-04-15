@@ -1,3 +1,9 @@
+# Claude Code local settings (machine-specific paths)
+.claude/
+
+# Superpowers brainstorm session state
+.superpowers/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
