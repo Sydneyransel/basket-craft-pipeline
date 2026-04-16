@@ -8,7 +8,7 @@ from db import get_pg_engine
 # - oi.price_usd   → per-item price in order_items (no quantity column; price_usd is the line total)
 # - p.product_name → grouped as product_category (no category column exists in products)
 TRANSFORM_SQL = """
-CREATE TABLE monthly_sales_summary AS
+CREATE TABLE analytics.monthly_sales_summary AS
 SELECT
     p.product_name                                 AS product_category,
     DATE_TRUNC('month', o.created_at)              AS month,
@@ -28,10 +28,11 @@ def main():
         pg_engine = get_pg_engine()
 
         with pg_engine.connect() as conn:
-            conn.execute(text("DROP TABLE IF EXISTS monthly_sales_summary"))
+            conn.execute(text("CREATE SCHEMA IF NOT EXISTS analytics"))
+            conn.execute(text("DROP TABLE IF EXISTS analytics.monthly_sales_summary"))
             conn.execute(text(TRANSFORM_SQL))
             result = conn.execute(
-                text("SELECT COUNT(*) FROM monthly_sales_summary")
+                text("SELECT COUNT(*) FROM analytics.monthly_sales_summary")
             )
             row_count = result.scalar()
             conn.commit()
