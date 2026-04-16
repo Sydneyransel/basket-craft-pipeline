@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:15
     container_name: basket_craft_db
+    restart: unless-stopped
     ports:
       - "${PG_PORT}:5432"
     environment:
