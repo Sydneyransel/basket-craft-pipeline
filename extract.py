@@ -12,15 +12,10 @@ def main():
         mysql_engine = get_mysql_engine()
         pg_engine = get_pg_engine()
 
-        with pg_engine.connect() as conn:
-            conn.execute(text("CREATE SCHEMA IF NOT EXISTS raw"))
-            conn.commit()
-        print("Raw schema ready.")
-
         for table in TABLES:
             with mysql_engine.connect() as conn:
                 df = pd.read_sql(f"SELECT * FROM {table}", conn)
-            df.to_sql(table, pg_engine, schema="raw", if_exists="replace", index=False)
+            df.to_sql(table, pg_engine, schema="public", if_exists="replace", index=False)
             print(f"  {table}: {len(df)} rows loaded")
 
         print("Extraction complete.")

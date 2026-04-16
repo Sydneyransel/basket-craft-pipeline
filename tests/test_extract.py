@@ -17,6 +17,6 @@ def test_pg_connection(pg_engine):
 @pytest.mark.parametrize("table", ["orders", "order_items", "products"])
 def test_raw_table_has_rows(table, pg_engine):
     with pg_engine.connect() as conn:
-        result = conn.execute(text(f"SELECT COUNT(*) FROM raw.{table}"))
+        result = conn.execute(text(f"SELECT COUNT(*) FROM {table}"))
         count = result.scalar()
-    assert count > 0, f"raw.{table} has no rows — did extract.py run?"
+    assert count > 0, f"{table} has no rows — did extract.py run?"
