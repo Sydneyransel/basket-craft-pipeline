@@ -38,7 +38,8 @@ def main():
         print("Raw schema ready.")
 
         for table in TABLES:
-            df = pd.read_sql(f"SELECT * FROM {table}", mysql_engine)
+            with mysql_engine.connect() as conn:
+                df = pd.read_sql(f"SELECT * FROM {table}", conn)
             df.to_sql(table, pg_engine, schema="raw", if_exists="replace", index=False)
             print(f"  {table}: {len(df)} rows loaded")
 
