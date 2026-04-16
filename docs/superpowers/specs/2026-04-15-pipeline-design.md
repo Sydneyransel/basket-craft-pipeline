@@ -61,20 +61,20 @@ Runs a PostgreSQL 15 container:
 - Container name: `basket_craft_db`
 - Host port: `5433` (avoids conflict with MP01 which uses `5432`)
 - Database: `basket_craft`
-- User: `student` / Password: `go_lions`
+- User/password: read from `.env` via `${PG_USER}` / `${PG_PASSWORD}`
 
 ### `.env`
 ```
-MYSQL_HOST=db.isba.co
+MYSQL_HOST=<host>
 MYSQL_PORT=3306
-MYSQL_USER=analyst
-MYSQL_PASSWORD=go_lions
+MYSQL_USER=<user>
+MYSQL_PASSWORD=<password>
 MYSQL_DATABASE=basket_craft
 
 PG_HOST=localhost
 PG_PORT=5433
-PG_USER=student
-PG_PASSWORD=go_lions
+PG_USER=<user>
+PG_PASSWORD=<password>
 PG_DATABASE=basket_craft
 ```
 
