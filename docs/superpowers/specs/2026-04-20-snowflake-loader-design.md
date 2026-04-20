@@ -48,9 +48,9 @@ Mirrors the structure of `extract.py`:
 1. Import `get_pg_engine` and `get_snowflake_connection` from `db.py`
 2. Define `TABLES = ["orders", "order_items", "products"]`
 3. For each table:
-   - Read into a pandas DataFrame via `pd.read_sql()` using `get_pg_engine()`
-   - Uppercase the DataFrame column names before writing (Snowflake stores unquoted identifiers in uppercase; uppercasing avoids case-sensitive quoted columns)
-   - Write to Snowflake using `write_pandas(..., overwrite=True, auto_create_table=True, quote_identifiers=False)`
+   - Read the full table into a pandas DataFrame in-memory via `pd.read_sql()` using `get_pg_engine()` (dataset is small enough; no chunking needed)
+   - Uppercase the DataFrame column names (`df.columns = df.columns.str.upper()`)
+   - Write to Snowflake passing the table name in uppercase (e.g. `"ORDERS"`), with `overwrite=True, auto_create_table=True, quote_identifiers=False`
 4. Print row counts per table; print completion message
 5. Wrap in try/except — errors go to stderr, exit code 1
 
@@ -74,8 +74,9 @@ SNOWFLAKE_SCHEMA=raw
 ## Data Flow
 
 - **Source:** `public.orders`, `public.order_items`, `public.products` on AWS RDS PostgreSQL
-- **Destination:** `raw.orders`, `raw.order_items`, `raw.products` on Snowflake
-- **Write mode:** `overwrite=True` — tables are replaced on every run (idempotent, consistent with `if_exists="replace"` in `extract.py`)
+- **Destination:** `raw.ORDERS`, `raw.ORDER_ITEMS`, `raw.PRODUCTS` on Snowflake (all identifiers uppercase, unquoted)
+- **Chunking:** full table loaded into memory as a single DataFrame — appropriate for this dataset size
+- **Write mode:** truncate-and-reload (`overwrite=True`) — tables are fully replaced on every run
 - **Schema creation:** `auto_create_table=True` — Snowflake tables are created on first run; column types are inferred from the DataFrame
 
 ## Error Handling
