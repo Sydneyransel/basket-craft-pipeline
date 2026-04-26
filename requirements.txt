@@ -2,6 +2,7 @@ sqlalchemy
 pymysql
 psycopg2-binary
 python-dotenv
-pandas
+pandas<3.0.0
 pytest
 snowflake-connector-python
+pyarrow
