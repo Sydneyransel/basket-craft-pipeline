@@ -6,3 +6,4 @@ pandas<3.0.0
 pytest
 snowflake-connector-python
 pyarrow
+dbt-snowflake

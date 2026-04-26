@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Cleaned customer records. Drops credential columns, fixes shipping address typo.
+    columns:
+      - name: customer_id
+        description: Primary key.
+        tests:
+          - not_null
+          - unique
+      - name: email
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: Cleaned order records. user_id renamed to customer_id.
+    columns:
+      - name: order_id
+        description: Primary key.
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Foreign key to stg_customers.
+        tests:
+          - not_null
+
+  - name: stg_order_items
+    description: Individual line items per order. is_primary_item cast to boolean.
+    columns:
+      - name: order_item_id
+        description: Primary key.
+        tests:
+          - not_null
+          - unique
+      - name: order_id
+        description: Foreign key to stg_orders.
+        tests:
+          - not_null
+      - name: product_id
+        description: Foreign key to stg_products.
+        tests:
+          - not_null
+
+  - name: stg_products
+    description: Cleaned product catalog.
+    columns:
+      - name: product_id
+        description: Primary key.
+        tests:
+          - not_null
+          - unique

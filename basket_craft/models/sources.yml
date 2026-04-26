@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    database: basket_craft
+    schema: raw
+    tables:
+      - name: customers
+      - name: employees
+      - name: order_item_refunds
+      - name: order_items
+      - name: orders
+      - name: products
+      - name: website_pageviews
+      - name: website_sessions
