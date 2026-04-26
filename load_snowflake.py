@@ -22,6 +22,8 @@ def main():
                     snowflake_name = "customers" if table == "users" else table
                     df = pd.read_sql(f"SELECT * FROM raw.{table}", pg_conn)
                     df.columns = df.columns.str.upper()
+                    if table == "users":
+                        df.rename(columns={"USER_ID": "CUSTOMER_ID"}, inplace=True)
                     write_pandas(
                         conn,
                         df,
