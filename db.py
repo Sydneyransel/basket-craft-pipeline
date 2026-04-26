@@ -1,5 +1,4 @@
 import os
-import snowflake.connector
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
@@ -25,6 +24,7 @@ def get_pg_engine():
 
 
 def get_snowflake_connection():
+    import snowflake.connector
     return snowflake.connector.connect(
         account=os.getenv("SNOWFLAKE_ACCOUNT"),
         user=os.getenv("SNOWFLAKE_USER"),

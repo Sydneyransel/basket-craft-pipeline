@@ -26,6 +26,11 @@ python extract.py   # MySQL → PostgreSQL public schema
 python transform.py # public tables → analytics.monthly_sales_summary
 ```
 
+**Load raw tables into Snowflake:**
+```bash
+python load_snowflake.py  # AWS RDS PostgreSQL raw schema → Snowflake raw schema
+```
+
 **Run all tests:**
 ```bash
 pytest
@@ -47,6 +52,11 @@ MySQL (db.isba.co:3306)
   └─[extract.py]─► PostgreSQL public schema (Docker localhost:5433)
                       orders, order_items, products
                       └─[transform.py]─► analytics.monthly_sales_summary
+
+AWS RDS PostgreSQL raw schema
+  orders, order_items, products
+    └─[load_snowflake.py]─► Snowflake raw schema
+                              ORDERS, ORDER_ITEMS, PRODUCTS
 ```
 
 **`db.py`** — shared SQLAlchemy engine factories (`get_mysql_engine()`, `get_pg_engine()`). Both `extract.py` and `transform.py` import from here. Credentials come from `.env` via `python-dotenv`.
@@ -54,6 +64,8 @@ MySQL (db.isba.co:3306)
 **`extract.py`** — reads all three tables from MySQL with pandas `read_sql`, writes them to the `public` schema in PostgreSQL using `df.to_sql(..., if_exists="replace")`. No schema transformation happens here.
 
 **`transform.py`** — runs a single `CREATE TABLE AS SELECT` inside PostgreSQL that joins the three raw tables and aggregates by `product_name` and truncated month. Writes to `analytics.monthly_sales_summary`. The `analytics` schema is created if it doesn't exist; the table is dropped and recreated on each run.
+
+**`load_snowflake.py`** — reads all three tables from AWS RDS PostgreSQL (`raw` schema) into pandas DataFrames, uppercases column names, and bulk-loads into Snowflake `raw` schema using `write_pandas`. Tables are truncated and replaced on every run (`overwrite=True`). Requires six `SNOWFLAKE_*` env vars in `.env`.
 
 **`tests/conftest.py`** — provides session-scoped `mysql_engine` and `pg_engine` fixtures via `db.py`. `pytest.ini` sets `pythonpath = .` so test files can import project modules.
 
@@ -75,6 +87,7 @@ The actual MySQL source schema differs from generic naming conventions:
 ```
 MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
 PG_HOST, PG_PORT, PG_USER, PG_PASSWORD, PG_DATABASE
+SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PASSWORD, SNOWFLAKE_WAREHOUSE, SNOWFLAKE_DATABASE, SNOWFLAKE_SCHEMA
 ```
 
 PostgreSQL runs on port `5433` (not the default `5432`) to avoid conflicts with other local PostgreSQL instances.
